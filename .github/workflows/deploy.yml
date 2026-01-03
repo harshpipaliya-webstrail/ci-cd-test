@@ -28,10 +28,10 @@ jobs:
 
           if [ "${GITHUB_REF##*/}" == "staging" ]; then
             echo "Deploying STAGING branch..."
-            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "/projects/ci-cd-test/deploy.sh staging"
+            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "/home/ubuntu/projects/ci-cd-test/deploy.sh staging"
           elif [ "${GITHUB_REF##*/}" == "production" ]; then
             echo "Deploying PRODUCTION branch..."
-            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "/projects/ci-cd-test/deploy.sh production"
+            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "/home/ubuntu/projects/ci-cd-test/deploy.sh production"
           else
             echo "Branch not configured for deployment."
           fi
