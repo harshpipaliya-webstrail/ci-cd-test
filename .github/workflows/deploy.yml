@@ -1,0 +1,41 @@
+name: CI/CD Deploy
+
+on:
+  push:
+    branches:
+      - staging      # staging branch
+      - production   # production branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2️⃣ Setup SSH
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+      # 3️⃣ Deploy based on branch
+      - name: Deploy to server
+        run: |
+          echo "Starting deployment..."
+
+          if [ "${GITHUB_REF##*/}" == "staging" ]; then
+            echo "Deploying STAGING branch..."
+            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "/home/ubuntu/projects/ci-cd-test/deploy.sh staging"
+          elif [ "${GITHUB_REF##*/}" == "production" ]; then
+            echo "Deploying PRODUCTION branch..."
+            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "/home/ubuntu/projects/ci-cd-test/deploy.sh production"
+          else
+            echo "Branch not configured for deployment."
+          fi
+
+      # 4️⃣ Optional: Confirm deployment
+      - name: Deployment Complete
+        run: echo "✅ Deployment finished!"
